@@ -1,8 +1,0 @@
-{
-    "js/ts.tsserver.automaticTypeAcquisition.enabled": false,
-    "files.watcherExclude": {
-        "**/node_modules/**": true,
-        "**/dist/**": true,
-        "**/.next/**": true
-    },
-}
