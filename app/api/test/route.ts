@@ -3,7 +3,7 @@ import { getPassById } from "@/lib/authentication/login";
 
 export async function GET() {
   try {
-    const pass = await getPassById("2022337001");
+    const pass = await getPassById("2022337005");
     const message = `Password: ${pass} ${Date.now()}`;
 
     return new Response(

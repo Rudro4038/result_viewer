@@ -8,8 +8,11 @@ import {
     Link,
     TextField,
     Typography,
+    Alert,
+    CircularProgress,
 } from "@mui/material";
 import { keyframes } from "@emotion/react";
+import { useRouter } from "next/navigation";
 
 const fadeIn = keyframes`
   from {
@@ -25,28 +28,54 @@ const fadeIn = keyframes`
 export default function LoginPage() {
     const [userId, setUserId] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const router = useRouter();
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        if (!userId) {
-            alert("Please enter a User ID.");
+        setError("");
+
+        if (!userId || !password) {
+            setError("Please enter both User ID and Password.");
             return;
         }
 
+        setLoading(true);
+
         try {
-            const response = await fetch(`/api/login/${userId}`, {
+            const response = await fetch(`/api/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ password }),
+                body: JSON.stringify({
+                    id: userId,
+                    password,
+                }),
             });
 
             const result = await response.json();
-            console.log("Login result:", result);
-            // Here you can handle the login result, e.g., redirect on success
-        } catch (error) {
-            console.error("Login failed:", error);
+            console.log("Login response:", result);
+            console.log("Role response:", result.role);
+
+            if (!response.ok) {
+                setError(result.message || "Login failed");
+                return;
+            }
+
+            // Success → redirect based on role
+            if (result.role === "admin") {
+                router.push("/admin/dashboard");
+            } else {
+                router.push("/dashboard");
+            }
+        } catch (err) {
+            console.error("Login failed:", err);
+            setError("Something went wrong. Try again.");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -56,7 +85,6 @@ export default function LoginPage() {
             maxWidth="xs"
             sx={{
                 display: "flex",
-                flexDirection: "column",
                 justifyContent: "center",
                 alignItems: "center",
                 minHeight: "100vh",
@@ -72,79 +100,89 @@ export default function LoginPage() {
                     boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
                     backgroundColor: "white",
                     animation: `${fadeIn} 0.5s ease-out`,
+                    width: "100%",
                 }}
             >
-                <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
+                <Typography component="h1" variant="h5" sx={{ mb: 2 }}>
                     Login
                 </Typography>
-                <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+
+                {error && (
+                    <Alert severity="error" sx={{ width: "100%", mb: 2 }}>
+                        {error}
+                    </Alert>
+                )}
+
+                <Box component="form" onSubmit={handleSubmit} noValidate>
+                    {/* USER ID */}
                     <TextField
                         margin="normal"
                         required
                         fullWidth
-                        id="userId"
                         label="User ID"
-                        name="userId"
-                        autoComplete="username"
                         autoFocus
                         value={userId}
                         onChange={(e) => setUserId(e.target.value)}
                         sx={{
                             "& .MuiOutlinedInput-root": {
                                 transition: "all 0.3s ease-in-out",
-
                                 "&:hover .MuiOutlinedInput-notchedOutline": {
                                     borderColor: "primary.main",
                                 },
-
                                 "&.Mui-focused": {
-                                    boxShadow: "0 0 0 2px rgba(25, 118, 210, 0.2)",
+                                    boxShadow:
+                                        "0 0 0 2px rgba(25, 118, 210, 0.2)",
                                 },
-
-                                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                                "&.Mui-focused .MuiOutlinedInput-notchedOutline":
+                                {
                                     borderColor: "primary.main",
                                 },
                             },
                         }}
                     />
 
+                    {/* PASSWORD */}
                     <TextField
                         margin="normal"
                         required
                         fullWidth
-                        name="password"
                         label="Password"
                         type="password"
-                        id="password"
-                        autoComplete="current-password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         sx={{
                             "& .MuiOutlinedInput-root": {
                                 transition: "all 0.3s ease-in-out",
-
                                 "&:hover .MuiOutlinedInput-notchedOutline": {
                                     borderColor: "primary.main",
                                 },
-
                                 "&.Mui-focused": {
-                                    boxShadow: "0 0 0 2px rgba(25, 118, 210, 0.2)",
+                                    boxShadow:
+                                        "0 0 0 2px rgba(25, 118, 210, 0.2)",
                                 },
-
-                                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                                "&.Mui-focused .MuiOutlinedInput-notchedOutline":
+                                {
                                     borderColor: "primary.main",
                                 },
                             },
                         }}
                     />
+
+                    {/* BUTTON */}
                     <Button
                         type="submit"
                         fullWidth
                         variant="contained"
+                        disabled={loading}
                         sx={{ mt: 3, mb: 2 }}
                     >
-                        Sign In
+                        {loading ? (
+                            <CircularProgress size={24} color="inherit" />
+                        ) : (
+                            "Sign In"
+                        )}
                     </Button>
+
                     <Link
                         href="#"
                         variant="body2"
@@ -162,4 +200,3 @@ export default function LoginPage() {
         </Container>
     );
 }
-

@@ -6,7 +6,6 @@ const globalForMongo = globalThis as typeof globalThis & {
 
 export async function connectToDatabase() {
   const uri = process.env.MONGODB_URI;
-  console.log("Connecting to MongoDB..." + uri );
 
   if (!uri) {
     throw new Error("MONGODB_URI is not set");
