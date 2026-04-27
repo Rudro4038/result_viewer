@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useRole } from "@/context/role-context";
 
-export default function Home() {
+export default function UserPage() {
   const router = useRouter();
   const { role } = useRole();
 
@@ -14,10 +14,15 @@ export default function Home() {
       return;
     }
 
-    router.replace(role === "admin" ? "/admin" : "/user");
+    if (role !== "user") {
+      router.replace("/admin");
+    }
   }, [role, router]);
 
   return (
-    <h1 className="p-6 text-xl">Redirecting...</h1>
+    <main className="p-6 space-y-4">
+      <h1 className="text-2xl font-semibold">User Dashboard</h1>
+      <p>You are viewing the user route.</p>
+    </main>
   );
 }
