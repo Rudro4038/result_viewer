@@ -1,11 +1,6 @@
 // /lib/authentication/login.ts
 import { connectToDatabase } from "@/lib/database/mongodb";
-
-interface UserCredential {
-  id: string;
-  pass: string;
-  role: string;
-}
+import { UserCredential } from "@/lib/types/user";
 
 export async function getUserById(
   userId: string

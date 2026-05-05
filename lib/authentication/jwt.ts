@@ -1,5 +1,5 @@
 // /lib/auth/jwt.ts
-import jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken"; 
 
 const SECRET = process.env.JWT_SECRET || "dev-secret"; // use env in production
 

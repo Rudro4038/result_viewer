@@ -1,8 +1,14 @@
 {
-    "js/ts.tsserver.automaticTypeAcquisition.enabled": false,
-    "files.watcherExclude": {
-        "**/node_modules/**": true,
-        "**/dist/**": true,
-        "**/.next/**": true
-    },
+  "editor.defaultFormatter": null,
+  "editor.formatOnType": true, // required
+  "editor.formatOnPaste": true, // optional
+  "editor.formatOnSave": false, // optional
+  "editor.formatOnSaveMode": "file", // required to format on save
+  "files.autoSave": "onFocusChange", // optional but recommended
+  "vs-code-prettier-eslint.prettierLast": true,
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
+  "notebook.defaultFormatter": "esbenp.prettier-vscode",
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  } // set as "true" to run 'prettier' last not first
 }

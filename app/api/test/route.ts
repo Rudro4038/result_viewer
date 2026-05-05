@@ -1,28 +1,30 @@
 // app/api/test/route.ts
-import { getPassById } from "@/lib/authentication/login";
+import { getUserById } from "@/lib/authentication/login";
+import { UserCredential } from "@/lib/types/user";
 
 export async function GET() {
   try {
-    const pass = await getPassById("2022337005");
-    const message = `Password: ${pass} ${Date.now()}`;
+    const user: UserCredential | null = await getUserById("2022337005");
 
-    return new Response(
-      JSON.stringify({ message }),
-      {
-        status: 200,
+    if (!user) {
+      return new Response(JSON.stringify({ error: "User not found" }), {
+        status: 404,
         headers: { "Content-Type": "application/json" },
-      }
-    );
+      });
+    }
+
+    const message = `User: ${user.name} ${Date.now()}`;
+
+    return new Response(JSON.stringify({ message }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (error) {
-    console.error("Error fetching password:", error);
+    console.error("Error fetching user:", error);
 
-    return new Response(
-      JSON.stringify({ error: "Error fetching password" }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    return new Response(JSON.stringify({ error: "Error fetching user" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }
-``

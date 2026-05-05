@@ -4,21 +4,22 @@ import { Avatar, Box, Paper, Typography } from "@mui/material";
 import { keyframes } from "@emotion/react";
 
 const fadeIn = keyframes`
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 `;
 
 interface ProfileProps {
     id: string;
+    role: string;
 }
 
-export default function Profile({ id }: ProfileProps) {
+export default function Profile({ id, role }: ProfileProps) {
     return (
         <Paper
             elevation={3}
@@ -41,10 +42,13 @@ export default function Profile({ id }: ProfileProps) {
             </Avatar>
             <Box>
                 <Typography variant="subtitle1" fontWeight="bold">
-                    User ID
+                    <b>Registration:</b> 
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                     {id}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                    Role: {role}
                 </Typography>
             </Box>
         </Paper>

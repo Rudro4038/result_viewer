@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Paper } from "@mui/material";
+import { Paper } from "@mui/material";
 
 export default function Result() {
     return (

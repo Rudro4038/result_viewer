@@ -13,11 +13,11 @@ export default function UserDashboardPage() {
         <Container maxWidth="lg" sx={{ py: 4 }}>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 <Typography variant="h4" component="h1" gutterBottom>
-                    User Dashboard
+                    Dashboard
                 </Typography>
 
                 {/* Profile Component */}
-                <Profile id={mockUserId} />
+                <Profile id={mockUserId} role={"user"} />
 
                 {/* Notice Component */}
                 <Notice text={mockNotice} />
