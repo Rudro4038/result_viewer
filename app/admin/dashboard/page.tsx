@@ -2,16 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { Box, Container, CircularProgress } from "@mui/material";
+import { User } from "@/types/user";
 
 import Profile from "@/components/Profile";
 import Notice from "@/components/Notice";
 import Publish from "@/components/Publish";
 import Result from "@/components/Result";
-
-type User = {
-    id: string;
-    role: string;
-};
 
 export default function AdminDashboardPage() {
     const [user, setUser] = useState<User | null>(null);
@@ -35,6 +31,7 @@ export default function AdminDashboardPage() {
 
                 const data = await res.json();
                 setUser(data);
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
             } catch (err) {
                 setError("Failed to load user session");
             } finally {
@@ -83,7 +80,7 @@ export default function AdminDashboardPage() {
         <Container maxWidth="lg" sx={{ py: 4 }}>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 {/* Profile (securely derived from session) */}
-                <Profile id={user.id} role={user.role} />
+                <Profile name={user.name} id={user.id} role={user.role} />
 
                 {/* Admin-only content safeguard */}
                 {user.role === "admin" && (

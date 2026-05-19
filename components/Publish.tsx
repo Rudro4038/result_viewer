@@ -12,12 +12,12 @@ import {
 import { keyframes } from "@emotion/react";
 
 const fadeIn = keyframes`
-  from {
+    from {
     opacity: 0;
-  }
-  to {
+    }
+    to {
     opacity: 1;
-  }
+    }
 `;
 
 export default function Publish() {
@@ -54,11 +54,7 @@ export default function Publish() {
                     }}
                 >
                     <Typography variant="h6">Publish Content</Typography>
-                    <TextField
-                        label="Title"
-                        variant="outlined"
-                        fullWidth
-                    />
+                    <TextField label="Title" variant="outlined" fullWidth />
                     <TextField
                         label="Content"
                         variant="outlined"

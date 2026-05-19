@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { User } from "@/types/user";
 import { verifyToken } from "@/lib/authentication/jwt";
 
 export async function GET() {
@@ -21,5 +22,11 @@ export async function GET() {
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    return NextResponse.json({ id: decoded.id, role: decoded.role });
+    // Declare a variable with type User
+    const user: User = {
+        id: decoded.id,
+        role: decoded.role,
+        name: decoded.name,
+    };
+    return NextResponse.json(user);
 }

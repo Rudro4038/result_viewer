@@ -40,6 +40,7 @@ export async function POST(request: NextRequest) {
         const token = generateToken({
             id: user.id,
             role: user.role,
+            name: user.name,
         });
 
         // Send response with HTTP-only cookie

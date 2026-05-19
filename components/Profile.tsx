@@ -2,6 +2,7 @@
 
 import { Avatar, Box, Paper, Typography } from "@mui/material";
 import { keyframes } from "@emotion/react";
+import { User } from "@/types/user";
 
 const fadeIn = keyframes`
     from {
@@ -14,12 +15,7 @@ const fadeIn = keyframes`
     }
 `;
 
-interface ProfileProps {
-    id: string;
-    role: string;
-}
-
-export default function Profile({ id, role }: ProfileProps) {
+export default function Profile(user: User) {
     return (
         <Paper
             elevation={3}
@@ -30,7 +26,8 @@ export default function Profile({ id, role }: ProfileProps) {
                 gap: 2,
                 borderRadius: 2,
                 animation: `${fadeIn} 0.5s ease-out`,
-                transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
+                transition:
+                    "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
                 "&:hover": {
                     transform: "translateY(-4px)",
                     boxShadow: "0 8px 25px rgba(0,0,0,0.15)",
@@ -38,17 +35,17 @@ export default function Profile({ id, role }: ProfileProps) {
             }}
         >
             <Avatar sx={{ bgcolor: "primary.main" }}>
-                {id.charAt(0).toUpperCase()}
+                {user?.name ? user.name.charAt(0).toUpperCase() : ""}
             </Avatar>
             <Box>
                 <Typography variant="subtitle1" fontWeight="bold">
-                    <b>Registration:</b> 
+                    <b>{user?.name}</b>
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                    {id}
+                    {user?.id}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                    Role: {role}
+                    Role: {user?.role}
                 </Typography>
             </Box>
         </Paper>
