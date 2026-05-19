@@ -27,10 +27,11 @@ export default function PdfValidator() {
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = event.target.files?.[0];
+
         if (selectedFile && selectedFile.type === "application/pdf") {
             setFile(selectedFile);
             setFileName(selectedFile.name);
-            setValidationResult(null); // Reset previous results
+            setValidationResult(null);
         } else {
             alert("Please upload a valid PDF file.");
         }
@@ -62,6 +63,12 @@ export default function PdfValidator() {
         }
     };
 
+    const handleReset = () => {
+        setFile(null);
+        setFileName("");
+        setValidationResult(null);
+    };
+
     const renderTable = () => {
         if (!validationResult) return null;
 
@@ -69,19 +76,25 @@ export default function PdfValidator() {
         const displayHeaders = headers.slice(0, attribute.length);
 
         return (
-            <TableContainer component={Paper} sx={{ mt: 2 }}>
+            <TableContainer component={Paper} sx={{ mt: 3 }}>
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>Attribute</TableCell>
-                            <TableCell>Header</TableCell>
+                            <TableCell sx={{ fontWeight: "bold" }}>
+                                Attribute
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: "bold" }}>
+                                Header
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {attribute.map((attr, index) => (
                             <TableRow key={index}>
                                 <TableCell>{attr}</TableCell>
-                                <TableCell>{displayHeaders[index]}</TableCell>
+                                <TableCell draggable="true">
+                                    {displayHeaders[index] ?? ""}
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
@@ -91,32 +104,91 @@ export default function PdfValidator() {
     };
 
     return (
-        <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
+        <Paper variant="outlined" sx={{ p: 3, borderRadius: 3 }}>
+            {/* TITLE */}
             {fileName && (
-                <Typography variant="h5" sx={{ mb: 2 }}>
+                <Typography variant="h5" sx={{ mb: 3 }}>
                     {fileName}
                 </Typography>
             )}
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                <Button variant="contained" component="label">
-                    Upload PDF
-                    <input
-                        type="file"
-                        hidden
-                        accept="application/pdf"
-                        onChange={handleFileChange}
-                    />
-                </Button>
+
+            {/* UPLOAD ZONE (DROPZONE STYLE) */}
+            <Box
+                sx={{
+                    border: "2px dashed",
+                    borderColor: "primary.main",
+                    borderRadius: 3,
+                    p: 4,
+                    textAlign: "center",
+                    cursor: "pointer",
+                    transition: "0.2s ease",
+                    backgroundColor: "rgba(25, 118, 210, 0.04)",
+                    width: "100%",
+                    position: "relative",
+                    "&:hover": {
+                        backgroundColor: "rgba(25, 118, 210, 0.08)",
+                    },
+                }}
+                onClick={() => document.getElementById("pdf-upload")?.click()}
+            >
+                <input
+                    id="pdf-upload"
+                    type="file"
+                    hidden
+                    accept="application/pdf"
+                    onChange={handleFileChange}
+                />
+
+                <Typography variant="h6" sx={{ mb: 1 }}>
+                    📄 Upload PDF File
+                </Typography>
+
+                <Typography variant="body2" color="text.secondary">
+                    Drag & drop your PDF here or click to browse
+                </Typography>
+
+                {fileName && (
+                    <Box
+                        sx={{
+                            mt: 2,
+                            display: "inline-block",
+                            px: 2,
+                            py: 1,
+                            borderRadius: 2,
+                            backgroundColor: "primary.main",
+                            color: "white",
+                            fontSize: "0.85rem",
+                        }}
+                    >
+                        {fileName}
+                    </Box>
+                )}
+            </Box>
+
+            {/* ACTION BUTTONS */}
+            <Box sx={{ display: "flex", gap: 2, mt: 3 }}>
+                {file && (
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleValidate}
+                    >
+                        Validate PDF
+                    </Button>
+                )}
+
                 {file && (
                     <Button
                         variant="outlined"
                         color="primary"
-                        onClick={handleValidate}
+                        onClick={handleReset}
                     >
-                        Validate
+                        Reset
                     </Button>
                 )}
             </Box>
+
+            {/* RESULT TABLE */}
             {renderTable()}
         </Paper>
     );

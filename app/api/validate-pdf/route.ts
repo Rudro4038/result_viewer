@@ -25,7 +25,6 @@ export async function POST(request: Request) {
             "",
             "Total (10)",
             "Evaluation (5)",
-            "Extra Header", // To test slicing
         ],
     };
 
