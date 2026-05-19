@@ -8,6 +8,7 @@ import Profile from "@/components/Profile";
 import Notice from "@/components/Notice";
 import Publish from "@/components/Publish";
 import Result from "@/components/Result";
+import PdfValidator from "@/components/PdfValidator";
 
 export default function AdminDashboardPage() {
     const [user, setUser] = useState<User | null>(null);
@@ -86,7 +87,7 @@ export default function AdminDashboardPage() {
                 {user.role === "admin" && (
                     <>
                         <Notice text={mockAdminNotice} />
-                        <Publish />
+                        <PdfValidator />
                     </>
                 )}
                 <Result />
