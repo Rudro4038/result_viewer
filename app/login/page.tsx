@@ -69,7 +69,7 @@ export default function LoginPage() {
             if (result.role === "admin") {
                 router.push("/admin/dashboard");
             } else {
-                router.push("/dashboard");
+                router.push("/student/dashboard");
             }
         } catch (err) {
             console.error("Login failed:", err);

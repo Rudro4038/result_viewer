@@ -11,3 +11,11 @@ export function generateToken(payload: {
     expiresIn: "1d",
   });
 }
+
+export function verifyToken(token: string) {
+  try {
+    return jwt.verify(token, SECRET);
+  } catch (e) {
+    return null;
+  }
+}

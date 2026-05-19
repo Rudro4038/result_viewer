@@ -11,11 +11,13 @@ import {
     MenuItem,
     Box,
 } from "@mui/material";
+import { useRouter } from "next/navigation";
 
 export default function Navbar({ role }: { role: string }) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
     const open = Boolean(anchorEl);
+    const router = useRouter();
 
     const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -25,11 +27,23 @@ export default function Navbar({ role }: { role: string }) {
         setAnchorEl(null);
     };
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
         handleClose();
 
         // Logout logic
-        console.log("Logout clicked");
+        try {
+            const response = await fetch("/api/logout", {
+                method: "POST",
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                router.push("/login");
+            }
+        } catch (error) {
+            console.error("Logout failed:", error);
+        }
     };
 
     return (
