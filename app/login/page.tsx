@@ -134,9 +134,9 @@ export default function LoginPage() {
                                         "0 0 0 2px rgba(25, 118, 210, 0.2)",
                                 },
                                 "&.Mui-focused .MuiOutlinedInput-notchedOutline":
-                                {
-                                    borderColor: "primary.main",
-                                },
+                                    {
+                                        borderColor: "primary.main",
+                                    },
                             },
                         }}
                     />
@@ -161,9 +161,9 @@ export default function LoginPage() {
                                         "0 0 0 2px rgba(25, 118, 210, 0.2)",
                                 },
                                 "&.Mui-focused .MuiOutlinedInput-notchedOutline":
-                                {
-                                    borderColor: "primary.main",
-                                },
+                                    {
+                                        borderColor: "primary.main",
+                                    },
                             },
                         }}
                     />
