@@ -1,29 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import {
-    Box,
-    Button,
-    Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Typography,
-} from "@mui/material";
-
-interface ValidationResponse {
-    attribute: string[];
-    headers: string[];
-}
+import { useEffect, useState } from "react";
+import { Box, Button, Paper, Typography } from "@mui/material";
+import RenderTable from "./RenderTable";
+import { ValidationResponseForTable } from "@/types/ValidationResponseForTable";
 
 export default function PdfValidator() {
     const [file, setFile] = useState<File | null>(null);
     const [fileName, setFileName] = useState<string>("");
     const [validationResult, setValidationResult] =
-        useState<ValidationResponse | null>(null);
+        useState<ValidationResponseForTable | null>(null);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = event.target.files?.[0];
@@ -36,6 +22,10 @@ export default function PdfValidator() {
             alert("Please upload a valid PDF file.");
         }
     };
+
+    useEffect(() => {
+        console.log(validationResult);
+    }, [validationResult]);
 
     const handleValidate = async () => {
         if (!file) {
@@ -53,7 +43,7 @@ export default function PdfValidator() {
             });
 
             if (response.ok) {
-                const data: ValidationResponse = await response.json();
+                const data: ValidationResponseForTable = await response.json();
                 setValidationResult(data);
             } else {
                 console.error("Validation failed");
@@ -67,40 +57,6 @@ export default function PdfValidator() {
         setFile(null);
         setFileName("");
         setValidationResult(null);
-    };
-
-    const renderTable = () => {
-        if (!validationResult) return null;
-
-        const { attribute, headers } = validationResult;
-        const displayHeaders = headers.slice(0, attribute.length);
-
-        return (
-            <TableContainer component={Paper} sx={{ mt: 3 }}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell sx={{ fontWeight: "bold" }}>
-                                Attribute
-                            </TableCell>
-                            <TableCell sx={{ fontWeight: "bold" }}>
-                                Header
-                            </TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {attribute.map((attr, index) => (
-                            <TableRow key={index}>
-                                <TableCell>{attr}</TableCell>
-                                <TableCell draggable="true">
-                                    {displayHeaders[index] ?? ""}
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        );
     };
 
     return (
@@ -189,7 +145,10 @@ export default function PdfValidator() {
             </Box>
 
             {/* RESULT TABLE */}
-            {renderTable()}
+            <RenderTable
+                validationResult={validationResult}
+                setValidationResult={setValidationResult}
+            />
         </Paper>
     );
 }
