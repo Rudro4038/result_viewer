@@ -6,7 +6,6 @@ import { User } from "@/types/user";
 
 import Profile from "@/components/Profile";
 import Notice from "@/components/Notice";
-import Publish from "@/components/Publish";
 import Result from "@/components/Result";
 import PdfValidator from "@/components/PdfValidator";
 
