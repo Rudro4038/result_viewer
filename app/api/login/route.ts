@@ -1,12 +1,16 @@
-// /api/login/route.ts
+// app/api/login/route.ts
+import { NextRequest, NextResponse } from "next/server";
+import { connectToDatabase } from "@/lib/database/mongoose"; // Imported Mongoose connection utility
 import { getUserById } from "@/lib/authentication/login";
 import { generateToken } from "@/lib/authentication/jwt";
-import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
     try {
-        const { id, password } = await request.json();
+        // 1. Establish or verify the active global Mongoose connection instance
+        await connectToDatabase();
 
+        const { id, password } = await request.json();
+        console.log("Login attempt for user ID:", id, password);
         // Validate input
         if (!id || !password) {
             return NextResponse.json(
@@ -18,8 +22,9 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        // 2. Fetch the user profile (already optimized with Mongoose .lean() query)
         const user = await getUserById(id);
-        console.log(user);
+        console.log("Fetched User Profile:", user);
 
         if (!user) {
             return NextResponse.json(
@@ -28,7 +33,7 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Compare password
+        // 3. Compare the plaintext password with the user record's `pass` field
         if (user.pass !== password) {
             return NextResponse.json(
                 { success: false, message: "Invalid credentials." },
@@ -36,14 +41,14 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Generate JWT
+        // 4. Generate the JWT authentication payload
         const token = generateToken({
             id: user.id,
             role: user.role,
             name: user.name,
         });
 
-        // Send response with HTTP-only cookie
+        // 5. Construct response and serialize the HTTP-only cookie
         const response = NextResponse.json({
             success: true,
             role: user.role ?? null,
@@ -54,12 +59,12 @@ export async function POST(request: NextRequest) {
             secure: process.env.NODE_ENV === "production",
             sameSite: "strict",
             path: "/",
-            maxAge: 60 * 60 * 24,
+            maxAge: 60 * 60 * 24, // 24 hours
         });
 
         return response;
     } catch (error) {
-        console.error("Login API error:", error);
+        console.error("Login API route exception:", error);
 
         return NextResponse.json(
             { success: false, message: "An internal server error occurred." },

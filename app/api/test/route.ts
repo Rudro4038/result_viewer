@@ -1,6 +1,6 @@
 // app/api/test/route.ts
 import { getUserById } from "@/lib/authentication/login";
-import { UserCredential } from "@/lib/types/user";
+import { UserCredential } from "@/types/user";
 
 export async function GET() {
     try {

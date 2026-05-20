@@ -1,15 +1,16 @@
-// /lib/authentication/login.ts
-import { connectToDatabase } from "@/lib/database/mongodb";
-import { UserCredential } from "@/lib/types/user";
+import { connectToDatabase } from "@/lib/database/mongoose";
+import { UserCredential } from "@/types/UserCredential";
+import UserCredentialModel from "@/models/UserCredentialModel";
 
 export async function getUserById(
-  userId: string
+    userId: string,
 ): Promise<UserCredential | null> {
-  const client = await connectToDatabase();
-  const db = client.db("user_credentials");
-  const collection = db.collection<UserCredential>("id_pass");
+    // 1. Establish/verify the global Mongoose connection
+    await connectToDatabase();
 
-  const user = await collection.findOne({ id: userId });
+    // 2. Query the collection through the Mongoose model
+    // .lean() converts the Mongoose document back to a plain JavaScript object matching your type
+    const user = await UserCredentialModel.findOne({ id: userId }).lean();
 
-  return user || null;
+    return user || null;
 }
