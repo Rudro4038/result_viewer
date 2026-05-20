@@ -37,7 +37,7 @@ export default function PdfValidator() {
         formData.append("file", file);
 
         try {
-            const response = await fetch("/api/validate-pdf", {
+            const response = await fetch("/api/validate-pdf/upload", {
                 method: "POST",
                 body: formData,
             });
