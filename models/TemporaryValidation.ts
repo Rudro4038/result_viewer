@@ -51,6 +51,7 @@ const TemporaryValidation: Model<ITemporaryValidation> =
     userDbConnection.model<ITemporaryValidation>(
         "TemporaryValidation",
         TemporaryValidationSchema,
+        "temporary_upload_pdf",
     );
 
 export default TemporaryValidation;

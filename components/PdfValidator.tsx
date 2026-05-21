@@ -5,12 +5,14 @@ import { Box, Button, Paper, Typography } from "@mui/material";
 import HeaderFinaliser from "./HeaderFinaliser";
 import { ValidationResponseForTable } from "@/types/ValidationResponseForTable";
 import TotalPdfViewer from "@/components/TotalPdfViewer";
+import { TableData } from "@/types/TableData";
 
 export default function PdfValidator() {
     const [step, setStep] = useState<1 | 2 | 3>(1);
     const [file, setFile] = useState<File | null>(null);
     const [fileName, setFileName] = useState<string>("");
     const [uuid, setUuid] = useState<string | null>(null);
+    const [tableData, setTableData] = useState<TableData | null>(null);
     const [validationResult, setValidationResult] =
         useState<ValidationResponseForTable | null>(null);
 
@@ -58,11 +60,14 @@ export default function PdfValidator() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     uuid: uuid,
-                    updated_Rows: validationResult,
+                    updated_header_list: validationResult,
                 }),
             });
+            const data = await response.json();
+            console.log("Header approval response:", data);
 
             if (response.ok) {
+                setTableData(data);
                 setStep(3);
             } else {
                 console.error("Header confirmation failed");
@@ -82,7 +87,7 @@ export default function PdfValidator() {
             const response = await fetch("/api/validate-pdf/final_approve", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ validationId: uuid }),
+                body: JSON.stringify({ uuid: uuid, fileName: fileName }),
             });
 
             if (response.ok) {
@@ -102,6 +107,7 @@ export default function PdfValidator() {
         setFileName("");
         setUuid(null);
         setValidationResult(null);
+        setTableData(null);
     };
 
     const renderMainButton = () => {
@@ -218,7 +224,9 @@ export default function PdfValidator() {
                 />
             )}
 
-            {step === 3 && <TotalPdfViewer />}
+            {step === 3 && tableData && (
+                <TotalPdfViewer tableData={tableData} />
+            )}
         </Paper>
     );
 }
