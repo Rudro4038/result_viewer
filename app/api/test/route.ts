@@ -1,10 +1,11 @@
 // app/api/test/route.ts
-import { getUserById } from "@/lib/authentication/login";
-import { UserCredential } from "@/types/user";
+import { getUserCredentialById } from "@/lib/authentication/login";
+import { UserCredential } from "@/types/UserCredential";
 
 export async function GET() {
     try {
-        const user: UserCredential | null = await getUserById("2022337005");
+        const user: UserCredential | null =
+            await getUserCredentialById("2022337001");
 
         if (!user) {
             return new Response(JSON.stringify({ error: "User not found" }), {
@@ -13,7 +14,8 @@ export async function GET() {
             });
         }
 
-        const message = `User: ${user.name} ${Date.now()}`;
+        const message = `User: ${user.id}}`;
+        console.log(user);
 
         return new Response(JSON.stringify({ message }), {
             status: 200,

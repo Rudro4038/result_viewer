@@ -1,7 +1,7 @@
 // app/api/login/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { connectToDatabase } from "@/lib/database/mongoose"; // Imported Mongoose connection utility
-import { getUserById } from "@/lib/authentication/login";
+import { connectToDatabase } from "@/lib/database/mongoose";
+import { getUserCredentialById } from "@/lib/authentication/login";
 import { generateToken } from "@/lib/authentication/jwt";
 
 export async function POST(request: NextRequest) {
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
         }
 
         // 2. Fetch the user profile (already optimized with Mongoose .lean() query)
-        const user = await getUserById(id);
+        const user = await getUserCredentialById(id);
         console.log("Fetched User Profile:", user);
 
         if (!user) {

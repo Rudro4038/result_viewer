@@ -3,7 +3,7 @@
 import { Box, Container } from "@mui/material";
 import Profile from "@/components/Profile";
 import Notice from "@/components/Notice";
-import Result from "@/components/Result";
+import Result from "@/components/Results";
 
 export default function UserDashboardPage() {
     const mockUserId = "user-12345";

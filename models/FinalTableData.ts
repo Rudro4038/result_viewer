@@ -1,8 +1,8 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
-import { fileURLToPath } from "url";
 
 // Interface for the document
 export interface IFinalTableData extends Document {
+    fileName: string;
     tableData: mongoose.Schema.Types.Mixed;
     createdAt: Date;
 }

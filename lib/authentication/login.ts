@@ -2,7 +2,7 @@ import { connectToDatabase } from "@/lib/database/mongoose";
 import { UserCredential } from "@/types/UserCredential";
 import UserCredentialModel from "@/models/UserCredentialModel";
 
-export async function getUserById(
+export async function getUserCredentialById(
     userId: string,
 ): Promise<UserCredential | null> {
     // 1. Establish/verify the global Mongoose connection

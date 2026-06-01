@@ -1,16 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Box, Container, CircularProgress } from "@mui/material";
+import { Box, Container, CircularProgress, Typography } from "@mui/material";
 import { User } from "@/types/user";
 
 import Profile from "@/components/Profile";
 import Notice from "@/components/Notice";
-import Result from "@/components/Result";
+import Results from "@/components/Results";
 import PdfValidator from "@/components/PdfValidator";
+import { UploadedFileList } from "@/types/UploadedFileList";
 
 export default function AdminDashboardPage() {
     const [user, setUser] = useState<User | null>(null);
+    const [uploadedFiles, setUploadedFiles] = useState<UploadedFileList>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
@@ -18,31 +20,46 @@ export default function AdminDashboardPage() {
         "Admin Notice: System maintenance is scheduled for tonight at 2 AM.";
 
     useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const res = await fetch("/api/me", {
-                    method: "GET",
-                    credentials: "include", // important for cookies
-                });
+        console.log(uploadedFiles);
+    }, [uploadedFiles]);
 
-                if (!res.ok) {
+    useEffect(() => {
+        const fetchInitialData = async () => {
+            try {
+                // Fetch user session
+                const userRes = await fetch("/api/me", {
+                    method: "GET",
+                    credentials: "include",
+                });
+                if (!userRes.ok) {
                     throw new Error("Unauthorized");
                 }
+                const userData = await userRes.json();
+                setUser(userData);
 
-                const data = await res.json();
-                setUser(data);
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            } catch (err) {
-                setError("Failed to load user session");
+                // Fetch uploaded files
+                const filesRes = await fetch(
+                    "/api/get-uploaded-file/get-header-list",
+                );
+                if (filesRes.ok) {
+                    const filesData = await filesRes.json();
+                    setUploadedFiles(filesData.data);
+                } else {
+                    console.error("Failed to fetch uploaded files");
+                }
+            } catch (error: unknown) {
+                const errorMessage =
+                    error instanceof Error ? error.message : String(error);
+                setError("Failed to load initial data" + errorMessage);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchUser();
+        fetchInitialData();
     }, []);
 
-    // Loading state (prevents flash of admin UI)
+    // Loading state
     if (loading) {
         return (
             <Container
@@ -71,7 +88,9 @@ export default function AdminDashboardPage() {
                     justifyContent: "center",
                 }}
             >
-                <Box>Access denied. Please login again.</Box>
+                <Typography>
+                    {error || "Access denied. Please login again."}
+                </Typography>
             </Container>
         );
     }
@@ -79,17 +98,15 @@ export default function AdminDashboardPage() {
     return (
         <Container maxWidth="lg" sx={{ py: 4 }}>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                {/* Profile (securely derived from session) */}
                 <Profile name={user.name} id={user.id} role={user.role} />
 
-                {/* Admin-only content safeguard */}
                 {user.role === "admin" && (
                     <>
                         <Notice text={mockAdminNotice} />
                         <PdfValidator />
                     </>
                 )}
-                <Result />
+                <Results results={uploadedFiles} />
             </Box>
         </Container>
     );
