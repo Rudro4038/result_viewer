@@ -3,7 +3,8 @@ import { connectToDatabase } from "@/lib/database/mongoose";
 import TemporaryValidation from "@/models/TemporaryValidation";
 import { ValidationResponseForTable } from "@/types/ValidationResponseForTable";
 
-const FASTAPI_URL = "http://127.0.0.1:8000/parse-pdf";
+const FASTAPI_URL =
+    process.env.FASTAPI_URL || "http://127.0.0.1:8000/parse-pdf";
 
 export async function POST(request: Request) {
     const formData = await request.formData();
