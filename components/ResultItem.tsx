@@ -6,7 +6,6 @@ import {
     Box,
     Collapse,
     CircularProgress,
-    Paper,
 } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { UploadedFileListItem } from "@/types/UploadedFileList";
