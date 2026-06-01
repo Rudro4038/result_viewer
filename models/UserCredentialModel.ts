@@ -9,6 +9,8 @@ const UserCredentialSchema = new Schema<IUserCredentialDoc>(
     {
         id: { type: String, required: true, unique: true },
         pass: { type: String, required: true },
+        role: { type: String, required: true },
+        name: { type: String, required: true },
         // Add other fields from your UserCredential type here, for example:
         // email: { type: String }
     },

@@ -25,58 +25,112 @@ const fadeIn = keyframes`
     }
 `;
 
+type FormMode = "login" | "signup";
+
 export default function LoginPage() {
+    const [mode, setMode] = useState<FormMode>("login");
+    const [name, setName] = useState("");
     const [userId, setUserId] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
     const router = useRouter();
 
+    const handleLogin = async () => {
+        const response = await fetch(`/api/login`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                id: userId,
+                password,
+            }),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Login failed");
+        }
+
+        if (result.role === "admin") {
+            router.push("/admin/dashboard");
+        } else {
+            router.push("/student/dashboard");
+        }
+    };
+
+    const handleSignUp = async () => {
+        if (password !== confirmPassword) {
+            throw new Error("Passwords do not match.");
+        }
+
+        const response = await fetch(`/api/signup`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                id: userId,
+                name,
+                password,
+            }),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Sign up failed");
+        }
+
+        // Switch to login mode after successful signup
+        setMode("login");
+        setError(""); // Clear previous errors
+        // Optionally show a success message
+    };
+
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setError("");
 
-        if (!userId || !password) {
-            setError("Please enter both User ID and Password.");
-            return;
+        if (mode === "login") {
+            if (!userId || !password) {
+                setError("Please enter both User ID and Password.");
+                return;
+            }
+        } else {
+            if (!name || !userId || !password || !confirmPassword) {
+                setError("Please fill in all fields.");
+                return;
+            }
         }
 
         setLoading(true);
 
         try {
-            const response = await fetch(`/api/login`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    id: userId,
-                    password,
-                }),
-            });
-
-            const result = await response.json();
-            console.log("Login response:", result);
-            console.log("Role response:", result.role);
-
-            if (!response.ok) {
-                setError(result.message || "Login failed");
-                return;
-            }
-
-            // Success → redirect based on role
-            if (result.role === "admin") {
-                router.push("/admin/dashboard");
+            if (mode === "login") {
+                await handleLogin();
             } else {
-                router.push("/student/dashboard");
+                await handleSignUp();
             }
         } catch (err) {
-            console.error("Login failed:", err);
-            setError("Something went wrong. Try again.");
+            const message =
+                err instanceof Error
+                    ? err.message
+                    : "An unknown error occurred.";
+            console.error(`${mode} failed:`, err);
+            setError(message);
         } finally {
             setLoading(false);
         }
+    };
+
+    const toggleMode = () => {
+        setMode(mode === "login" ? "signup" : "login");
+        setError("");
     };
 
     return (
@@ -104,7 +158,7 @@ export default function LoginPage() {
                 }}
             >
                 <Typography component="h1" variant="h5" sx={{ mb: 2 }}>
-                    Login
+                    {mode === "login" ? "Login" : "Sign Up"}
                 </Typography>
 
                 {error && (
@@ -114,34 +168,28 @@ export default function LoginPage() {
                 )}
 
                 <Box component="form" onSubmit={handleSubmit} noValidate>
-                    {/* USER ID */}
+                    {mode === "signup" && (
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            label="Name"
+                            autoFocus
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                        />
+                    )}
+
                     <TextField
                         margin="normal"
                         required
                         fullWidth
-                        label="User ID"
-                        autoFocus
+                        label="Registration ID"
+                        autoFocus={mode === "login"}
                         value={userId}
                         onChange={(e) => setUserId(e.target.value)}
-                        sx={{
-                            "& .MuiOutlinedInput-root": {
-                                transition: "all 0.3s ease-in-out",
-                                "&:hover .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: "primary.main",
-                                },
-                                "&.Mui-focused": {
-                                    boxShadow:
-                                        "0 0 0 2px rgba(25, 118, 210, 0.2)",
-                                },
-                                "&.Mui-focused .MuiOutlinedInput-notchedOutline":
-                                    {
-                                        borderColor: "primary.main",
-                                    },
-                            },
-                        }}
                     />
 
-                    {/* PASSWORD */}
                     <TextField
                         margin="normal"
                         required
@@ -150,25 +198,20 @@ export default function LoginPage() {
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        sx={{
-                            "& .MuiOutlinedInput-root": {
-                                transition: "all 0.3s ease-in-out",
-                                "&:hover .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: "primary.main",
-                                },
-                                "&.Mui-focused": {
-                                    boxShadow:
-                                        "0 0 0 2px rgba(25, 118, 210, 0.2)",
-                                },
-                                "&.Mui-focused .MuiOutlinedInput-notchedOutline":
-                                    {
-                                        borderColor: "primary.main",
-                                    },
-                            },
-                        }}
                     />
 
-                    {/* BUTTON */}
+                    {mode === "signup" && (
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            label="Confirm Password"
+                            type="password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                        />
+                    )}
+
                     <Button
                         type="submit"
                         fullWidth
@@ -178,23 +221,46 @@ export default function LoginPage() {
                     >
                         {loading ? (
                             <CircularProgress size={24} color="inherit" />
-                        ) : (
+                        ) : mode === "login" ? (
                             "Sign In"
+                        ) : (
+                            "Sign Up"
                         )}
                     </Button>
 
                     <Link
                         href="#"
                         variant="body2"
+                        onClick={toggleMode}
                         sx={{
+                            cursor: "pointer",
                             "&:hover": {
                                 textDecoration: "underline",
                                 color: "primary.dark",
                             },
                         }}
-                    >
-                        Forgot Password?
-                    </Link>
+                    ></Link>
+                    <Box display="flex" justifyContent="space-between" mt={2}>
+                        {mode === "login" ? (
+                            <>
+                                <Typography variant="body2" align="left">
+                                    Don&apos;t have an account?
+                                </Typography>
+                                <Link href="/signup" underline="hover">
+                                    Sign Up
+                                </Link>
+                            </>
+                        ) : (
+                            <>
+                                <Typography variant="body2" align="left">
+                                    Already have an account?
+                                </Typography>
+                                <Link href="/login" underline="hover">
+                                    Sign In
+                                </Link>
+                            </>
+                        )}
+                    </Box>
                 </Box>
             </Box>
         </Container>
