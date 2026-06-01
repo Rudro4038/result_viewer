@@ -6,6 +6,7 @@ import HeaderFinaliser from "./HeaderFinaliser";
 import { ValidationResponseForTable } from "@/types/ValidationResponseForTable";
 import TotalPdfViewer from "@/components/TotalPdfViewer";
 import { TableData } from "@/types/TableData";
+import LoadingSpinner from "./LoadingSpinner";
 
 export default function PdfValidator() {
     const [step, setStep] = useState<1 | 2 | 3>(1);
@@ -15,6 +16,7 @@ export default function PdfValidator() {
     const [tableData, setTableData] = useState<TableData | null>(null);
     const [validationResult, setValidationResult] =
         useState<ValidationResponseForTable | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = event.target.files?.[0];
@@ -29,6 +31,7 @@ export default function PdfValidator() {
 
     const handleValidate = async () => {
         if (!file) return;
+        setIsLoading(true);
         const formData = new FormData();
         formData.append("file", file);
 
@@ -48,6 +51,8 @@ export default function PdfValidator() {
             }
         } catch (error) {
             console.error("An error occurred during validation:", error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -217,14 +222,16 @@ export default function PdfValidator() {
                 )}
             </Box>
 
-            {step === 2 && (
+            {isLoading && <LoadingSpinner />}
+
+            {step === 2 && !isLoading && (
                 <HeaderFinaliser
                     validationResult={validationResult}
                     setValidationResult={setValidationResult}
                 />
             )}
 
-            {step === 3 && tableData && (
+            {step === 3 && !isLoading && tableData && (
                 <TotalPdfViewer tableData={tableData} />
             )}
         </Paper>
