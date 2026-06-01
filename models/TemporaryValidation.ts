@@ -2,11 +2,21 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import { ValidationResponseForTable } from "@/types/ValidationResponseForTable";
 
+// Interface for TableData
+export interface ITableData {
+    primary_key: string;
+    columns: {
+        key: string;
+        header: string;
+    }[];
+    rows: any[]; // Using any for rows as their structure is dynamic
+}
+
 // Interface for the document
 export interface ITemporaryValidation extends Document {
     uuid: string;
     rawPdfData: mongoose.Schema.Types.Mixed;
-    tableData: mongoose.Schema.Types.Mixed;
+    tableData: ITableData;
     header_json_list: ValidationResponseForTable;
     createdAt: Date;
 }
@@ -22,8 +32,14 @@ const TemporaryValidationSchema: Schema = new Schema({
         required: true,
     },
     tableData: {
-        type: Schema.Types.Mixed,
-        required: true,
+        primary_key: String,
+        columns: [
+            {
+                key: String,
+                header: String,
+            },
+        ],
+        rows: [Schema.Types.Mixed], // Using Mixed for rows as their structure is dynamic
     },
     header_json_list: {
         type: [Schema.Types.Mixed],

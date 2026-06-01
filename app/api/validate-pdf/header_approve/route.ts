@@ -11,6 +11,11 @@ interface Header {
     primary_key?: boolean;
 }
 
+interface Cell {
+    id: number;
+    value: string;
+}
+
 export async function POST(request: Request) {
     try {
         const {
@@ -39,6 +44,13 @@ export async function POST(request: Request) {
         }
 
         const rawPdfData = tempValidation.rawPdfData;
+
+        if (!Array.isArray(rawPdfData)) {
+            return NextResponse.json(
+                { error: "Invalid rawPdfData format" },
+                { status: 400 },
+            );
+        }
 
         // 1. Filter and Process Headers
         const validHeaders = updated_header_list.filter(
@@ -72,12 +84,12 @@ export async function POST(request: Request) {
             validHeaders.map((h) => [h.id, `col_${h.id}`]),
         );
 
-        const rows = rawPdfData.map((row, rowIndex) => {
+        const rows = rawPdfData.map((row: Cell[], rowIndex) => {
             const rowObject: { [key: string]: string | number } = {
                 row_id: `row_${rowIndex}`,
             };
 
-            row.forEach((cell) => {
+            row.forEach((cell: Cell) => {
                 const key = idToKeyMap.get(cell.id);
                 // This check ensures that key is a string, not undefined
                 if (key) {
