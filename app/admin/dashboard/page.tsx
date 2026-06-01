@@ -9,6 +9,7 @@ import Notice from "@/components/Notice";
 import Results from "@/components/Results";
 import PdfValidator from "@/components/PdfValidator";
 import { UploadedFileList } from "@/types/UploadedFileList";
+import UploadedHeaders from "@/components/UploadViewerAndControler";
 
 export default function AdminDashboardPage() {
     const [user, setUser] = useState<User | null>(null);
@@ -59,6 +60,26 @@ export default function AdminDashboardPage() {
         fetchInitialData();
     }, []);
 
+    const handleDelete = async (fileId: string) => {
+        try {
+            const response = await fetch(`/api/get-uploaded-file/${fileId}`, {
+                method: "DELETE",
+            });
+
+            if (response.ok) {
+                setUploadedFiles((prevFiles) =>
+                    prevFiles.filter((file) => file.id !== fileId),
+                );
+            } else {
+                const errorData = await response.json();
+                setError(errorData.message || "Failed to delete file");
+            }
+        } catch (error) {
+            setError("An error occurred while deleting the file.");
+            console.error("Error deleting file:", error);
+        }
+    };
+
     // Loading state
     if (loading) {
         return (
@@ -99,14 +120,13 @@ export default function AdminDashboardPage() {
         <Container maxWidth="lg" sx={{ py: 4 }}>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 <Profile name={user.name} id={user.id} role={user.role} />
-
-                {user.role === "admin" && (
-                    <>
-                        <Notice text={mockAdminNotice} />
-                        <PdfValidator />
-                    </>
-                )}
+                <Notice text={mockAdminNotice} />
+                <PdfValidator />
                 <Results results={uploadedFiles} />
+                <UploadedHeaders
+                    files={uploadedFiles}
+                    onDelete={handleDelete}
+                />
             </Box>
         </Container>
     );
